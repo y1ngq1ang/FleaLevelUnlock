@@ -1,0 +1,54 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>FleaLevelUnlock</AssemblyName>
+    <RootNamespace>FleaLevelUnlock</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <!-- SPT ships these assemblies, so never copy them next to the mod dll -->
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+  <!--
+    SptRoot points at the SPT installation. Override it for a non-default install:
+      dotnet build -c Release -p:SptRoot=D:\SPT
+    Skip the deploy step (build only):
+      dotnet build -c Release -p:DeployOnBuild=false
+  -->
+  <PropertyGroup>
+    <SptRoot Condition="'$(SptRoot)' == ''">C:\SPT-5.0-BE</SptRoot>
+    <SptRuntimeDir>$(SptRoot)\SPT_Runtime\</SptRuntimeDir>
+    <DeployOnBuild Condition="'$(DeployOnBuild)' == ''">true</DeployOnBuild>
+    <ModsFolder>$(SptRuntimeDir)user\mods\$(AssemblyName)\</ModsFolder>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="SPTarkov.Server.Core">
+      <HintPath>$(SptRuntimeDir)SPTarkov.Server.Core.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="SPTarkov.DI">
+      <HintPath>$(SptRuntimeDir)SPTarkov.DI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="SPTarkov.Common">
+      <HintPath>$(SptRuntimeDir)SPTarkov.Common.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="SemanticVersioning">
+      <HintPath>$(SptRuntimeDir)SemanticVersioning.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <!-- Deploy into <SptRoot>\SPT_Runtime\user\mods\FleaLevelUnlock\ after every build -->
+  <Target Name="DeployToSptMods" AfterTargets="Build" Condition="'$(DeployOnBuild)' == 'true'">
+    <MakeDir Directories="$(ModsFolder)" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ModsFolder)" />
+    <Message Importance="high" Text="Deployed $(AssemblyName).dll -> $(ModsFolder)" />
+  </Target>
+
+</Project>

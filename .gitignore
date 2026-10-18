@@ -1,0 +1,14 @@
+# Build output
+bin/
+obj/
+
+# IDE / user files
+.vs/
+*.user
+*.suo
+*.DotSettings.user
+
+# OS noise
+Thumbs.db
+desktop.ini
+.DS_Store
